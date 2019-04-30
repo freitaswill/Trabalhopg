@@ -89,13 +89,13 @@ void SceneManager::key_callback(GLFWwindow * window, int key, int scancode, int 
 
 void SceneManager::mouseCursorCallback(GLFWwindow* window, double x, double y)
 {
-	std::cout << x << " : " << y << std::endl;
 }
 
 void SceneManager::mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
 {
 	if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
+
 		std::cout << "Left Button Pressed" << std::endl;
 	}
 }
@@ -153,6 +153,9 @@ void SceneManager::render()
 	else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && jumping == false) {
 		jumping = true;
 	}
+
+	
+
 	if (jumping == true && caindo == false) {
 		characterPositionY += 0.03f;
 		if (characterPositionY >= 0.5f) {
@@ -182,6 +185,14 @@ void SceneManager::run()
 	//GAME LOOP
 	while (!glfwWindowShouldClose(window))
 	{
+
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		{
+			//getting cursor position
+			glfwGetCursorPos(window, &xpos, &ypos);
+			cout << "Cursor Position at (" << xpos << " : " << ypos << endl;
+		}
+
 		switch (telaAtual)
 		{
 		case tMenu: telaMenu();
@@ -342,7 +353,6 @@ void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset)
 
 void SceneManager::telaJogo()
 {
-	std::cout << "Estamos na tela Jogo" << std::endl;
 }
 
 void SceneManager::telaMenu()
@@ -352,5 +362,4 @@ void SceneManager::telaMenu()
 		telaAtual = tJogo;
 	}
 	
-	std::cout << "Estamos na tela Menu" << std::endl;
 }

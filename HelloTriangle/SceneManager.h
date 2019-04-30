@@ -46,6 +46,7 @@ public:
 private:
 	GLchar *path;
 	GLfloat characterPositionX=0, characterPositionY=0, offsetBG1;
+	double xpos, ypos;
 	bool jumping = false, caindo = false;
 
 	//GFLW window
