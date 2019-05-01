@@ -36,10 +36,11 @@ public:
 	void setupScene();
 	void setupCamera2D();
 	int setupTexture(GLchar *path);
-	void draw(glm::vec3 transform, int index, GLfloat offset);
+	void draw(glm::vec3 transform, int index, GLfloat offset, glm::vec3 scale);
 	void telaJogo();
 	void telaMenu();
 	//static void tMenu();
+	bool checkCollision(int a, int b);
 
 	Tela telaAtual;
 
@@ -59,7 +60,7 @@ private:
 	GLuint VAO;
 
 	//Transformations - Model Matrix
-	glm::mat4 model;
+	glm::mat4 model[2];
 
 	//2D Camera - Projection matrix
 	glm::mat4 projection;
@@ -71,6 +72,9 @@ private:
 
 	//Transform index
 	glm::vec3 transform[2];
+	glm::vec3 scale[2];
+
+	int size[2][2];
 
 };
 

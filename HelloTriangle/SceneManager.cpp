@@ -129,7 +129,8 @@ void SceneManager::render()
 	shader->Use();
 
 	// Create transformations 
-	model = glm::mat4();
+	model[0] = glm::mat4();
+	model[1] = glm::mat4();
 	offsetX = float();
 
 	// Get their uniform location
@@ -144,10 +145,10 @@ void SceneManager::render()
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		characterPositionX += 0.1f;
+		characterPositionX += 0.001f;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		characterPositionX -= 0.1f;
+		characterPositionX -= 0.001f;
 
 	}
 	else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && jumping == false) {
@@ -173,10 +174,14 @@ void SceneManager::render()
 
 	// bind Texture
 	// Bind Textures using texture units
-	offsetBG1 += 0.1f;
-	draw(glm::vec3(0, 0, 0), texture[0], offsetBG1);
+	offsetBG1 += 0.001f;
+	draw(glm::vec3(0, 0, 0), texture[0], offsetBG1, glm::vec3(1, 1, 1));
 
-	draw(glm::vec3(characterPositionX, characterPositionY, 0), texture[1], 0);
+	draw(glm::vec3(characterPositionX, characterPositionY, 0), texture[1], 0, glm::vec3(1, 1, 1));
+
+	if (checkCollision(texture[0], texture[1])) {
+		cout << "colidiu";
+	}
 
 }
 
@@ -307,6 +312,9 @@ int SceneManager::setupTexture(GLchar *path)
 	//unsigned char *data = SOIL_load_image("../textures/wall.jpg", &width, &height, 0, SOIL_LOAD_RGB);
 	unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
 	
+	size[text][0] = width;
+	size[text][1] = height;
+	
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -328,13 +336,15 @@ int SceneManager::setupTexture(GLchar *path)
 	return text;
 }
 
-void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset)
+void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec3 scale)
 {
 	this->transform[index] = transform;
+	this->scale[index] = scale;
 	this->offset[index] = offset;
 
 	GLint modelLoc = glGetUniformLocation(shader->Program, "model");
-	model = glm::translate(model, glm::vec3(this->transform[index]));
+	model[index] = glm::translate(model[index], glm::vec3(this->transform[index]));
+	model[index] = glm::scale(model[index], glm::vec3(this->scale[index]));
 
 	GLint offsetXx = glGetUniformLocation(shader->Program, "offsetX");
 	offsetX = this->offset[index];
@@ -343,7 +353,7 @@ void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset)
 	glUniform1i(glGetUniformLocation(shader->Program, "ourTexture1"), 0);
 
 	
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model[index]));
 	glUniform1f(offsetXx, offsetX);
 	// render container
 	glBindVertexArray(VAO);
@@ -362,4 +372,16 @@ void SceneManager::telaMenu()
 		telaAtual = tJogo;
 	}
 	
+}
+
+bool SceneManager::checkCollision(int a, int b)
+{
+	if (transform[a].x * 800 + size[a][1]  <= transform[b].x * 800 - size[b][0]  ||
+		transform[a].x * 800 - size[a][1]  >= transform[b].x * 800 + size[b][0]  ||
+		transform[a].y * 600 + size[a][1]  <= transform[b].y * 600 - size[b][1]  ||
+		transform[a].y * 600 - size[a][1]  >= transform[b].y * 600 + size[b][1] ) {
+		return false;
+	}
+	else
+	return true;
 }
