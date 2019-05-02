@@ -129,8 +129,7 @@ void SceneManager::render()
 	shader->Use();
 
 	// Create transformations 
-	model[0] = glm::mat4();
-	model[1] = glm::mat4();
+	model = glm::mat4();
 	offsetX = float();
 
 	// Get their uniform location
@@ -174,14 +173,35 @@ void SceneManager::render()
 
 	// bind Texture
 	// Bind Textures using texture units
-	offsetBG1 += 0.001f;
-	draw(glm::vec3(0, 0, 0), texture[0], offsetBG1, glm::vec3(1, 1, 1));
+	offsetBG1 += 0.01f;
+	draw(glm::vec3(0, 0, 0), texture[0], offsetBG1, glm::vec3(3, 2, 1));
 
-	draw(glm::vec3(characterPositionX, characterPositionY, 0), texture[1], 0, glm::vec3(1, 1, 1));
+	draw(glm::vec3(characterPositionX - 0.5f, characterPositionY, 0), texture[1], 0, glm::vec3(1, 1, 1));
 
-	if (checkCollision(texture[0], texture[1])) {
+	obstaculoX -= 0.05f;
+
+	if (obstaculoX <= -3)
+		obstaculoX = 3;
+
+	draw(glm::vec3(obstaculoX, 0, 0), texture[2], 0, glm::vec3(0.2f, 0.2f, 1));
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		glfwGetCursorPos(window, &xpos, &ypos);
+		if (checkButton(xpos, ypos, texture[0]) == 0) {
+			cout << "colidiu";
+		}
+		if (checkButton(xpos, ypos, texture[0]) == 1) {
+			cout << " NNN  colidiu";
+		}
+	}
+	if (checkCollision(texture[2], texture[1])) {
 		cout << "colidiu";
 	}
+
+
+	
+
 
 }
 
@@ -191,12 +211,7 @@ void SceneManager::run()
 	while (!glfwWindowShouldClose(window))
 	{
 
-		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		{
-			//getting cursor position
-			glfwGetCursorPos(window, &xpos, &ypos);
-			cout << "Cursor Position at (" << xpos << " : " << ypos << endl;
-		}
+		
 
 		switch (telaAtual)
 		{
@@ -268,6 +283,8 @@ void SceneManager::setupScene()
 		texture[0] = setupTexture("../textures/box2.png");
 
 		texture[1] = setupTexture("../textures/yoshi.png");
+
+		texture[2] = setupTexture("../textures/zap.png");
 
 }
 
@@ -343,8 +360,8 @@ void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec
 	this->offset[index] = offset;
 
 	GLint modelLoc = glGetUniformLocation(shader->Program, "model");
-	model[index] = glm::translate(model[index], glm::vec3(this->transform[index]));
-	model[index] = glm::scale(model[index], glm::vec3(this->scale[index]));
+	model = glm::translate(model, glm::vec3(this->transform[index]));
+	model = glm::scale(model, glm::vec3(this->scale[index]));
 
 	GLint offsetXx = glGetUniformLocation(shader->Program, "offsetX");
 	offsetX = this->offset[index];
@@ -353,11 +370,20 @@ void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec
 	glUniform1i(glGetUniformLocation(shader->Program, "ourTexture1"), 0);
 
 	
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model[index]));
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glUniform1f(offsetXx, offsetX);
 	// render container
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	
+	model = glm::scale(model, glm::vec3(1/scale.x, 1 / scale.y, 1 / scale.z));
+	model = glm::translate(model, glm::vec3(-this->transform[index]));
+	glBindTexture(GL_TEXTURE_2D, index);
+	glUniform1i(glGetUniformLocation(shader->Program, "ourTexture1"), 0);
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	
+	
+
 
 }
 
@@ -376,12 +402,24 @@ void SceneManager::telaMenu()
 
 bool SceneManager::checkCollision(int a, int b)
 {
-	if (transform[a].x * 800 + size[a][1]  <= transform[b].x * 800 - size[b][0]  ||
-		transform[a].x * 800 - size[a][1]  >= transform[b].x * 800 + size[b][0]  ||
-		transform[a].y * 600 + size[a][1]  <= transform[b].y * 600 - size[b][1]  ||
-		transform[a].y * 600 - size[a][1]  >= transform[b].y * 600 + size[b][1] ) {
+	if (transform[a].x * 800 + size[a][0]/2 * scale[a].x <= transform[b].x * 800 - size[b][0] / 2 * scale[b].x ||
+		transform[a].x * 800 - size[a][0] / 2 * scale[a].x >= transform[b].x * 800 + size[b][0] / 2 * scale[b].x ||
+		transform[a].y * 600 + size[a][1] / 2 * scale[a].y <= transform[b].y * 600 - size[b][1] / 2 * scale[b].y ||
+		transform[a].y * 600 - size[a][1] / 2 * scale[a].y >= transform[b].y * 600 + size[b][1] / 2 * scale[b].y) {
 		return false;
 	}
 	else
 	return true;
+}
+
+int SceneManager::checkButton(double x, double y, int id)
+{
+	if ((x >= transform[id].x * 800 - size[id][0] / 2 * scale[id].x &&
+		x <= transform[id].x * 800 + size[id][0] / 2 * scale[id].x) &&
+		(y >= transform[id].y * 600 - size[id][1] / 2 * scale[id].y &&
+		y <= transform[id].y * 600 + size[id][1] / 2 * scale[id].y)) {
+		return 1;
+	}
+	else
+		return 0;
 }

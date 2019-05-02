@@ -41,12 +41,14 @@ public:
 	void telaMenu();
 	//static void tMenu();
 	bool checkCollision(int a, int b);
+	int checkButton(double x, double y, int id);
 
 	Tela telaAtual;
 
 private:
 	GLchar *path;
 	GLfloat characterPositionX=0, characterPositionY=0, offsetBG1;
+	GLfloat obstaculoX;
 	double xpos, ypos;
 	bool jumping = false, caindo = false;
 
@@ -60,21 +62,21 @@ private:
 	GLuint VAO;
 
 	//Transformations - Model Matrix
-	glm::mat4 model[2];
+	glm::mat4 model;
 
 	//2D Camera - Projection matrix
 	glm::mat4 projection;
 
 	//Texture index
-	unsigned int texture[2];
+	unsigned int texture[3];
 
-	float offsetX = 0, offset[2];
+	float offsetX = 0, offset[3];
 
 	//Transform index
-	glm::vec3 transform[2];
-	glm::vec3 scale[2];
+	glm::vec3 transform[3];
+	glm::vec3 scale[3];
 
-	int size[2][2];
+	int size[3][2];
 
 };
 
