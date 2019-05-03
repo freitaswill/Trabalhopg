@@ -18,8 +18,8 @@ SceneManager::~SceneManager()
 
 void SceneManager::initialize(GLuint w, GLuint h)
 {
-	width = w;
-	height = h;
+	width = 800;
+	height = 600;
 	
 	telaAtual = tMenu;
 
@@ -173,7 +173,7 @@ void SceneManager::render()
 
 		draw(glm::vec3(obstaculoX, 0, 0), texture[2], 0, glm::vec3(0.2f, 0.2f, 1));
 
-		if (checkCollision(texture[2], texture[1]))
+		if (checkCollision(texture[2]-1, texture[1]-1))
 		{
 			telaAtual = tGameOver;
 		}
@@ -323,16 +323,7 @@ void SceneManager::setupCamera2D()
 	//corrigindo o aspecto
 	float ratio;
 	float xMin = -1.0, xMax = 1.0, yMin = -1.0, yMax = 1.0, zNear = -1.0, zFar = 1.0;
-	if (width >= height)
-	{
-		ratio = width / (float)height;
-		projection = glm::ortho(xMin*ratio, xMax*ratio, yMin, yMax, zNear, zFar);
-	}
-	else
-	{
-		ratio = height / (float)width;
-		projection = glm::ortho(xMin, xMax, yMin*ratio, yMax*ratio, zNear, zFar);
-	}
+
 
 	// Get their uniform location
 	GLint projLoc = glGetUniformLocation(shader->Program, "projection");
@@ -359,8 +350,8 @@ int SceneManager::setupTexture(GLchar *path)
 	//unsigned char *data = SOIL_load_image("../textures/wall.jpg", &width, &height, 0, SOIL_LOAD_RGB);
 	unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
 	
-	size[text][0] = width;
-	size[text][1] = height;
+	size[text-1][0] = width;
+	size[text-1][1] = height;
 	
 	if (data)
 	{
@@ -385,16 +376,18 @@ int SceneManager::setupTexture(GLchar *path)
 
 void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec3 scale)
 {
-	this->transform[index] = transform;
-	this->scale[index] = scale;
-	this->offset[index] = offset;
+	this->transform[index-1] = transform;
+	this->scale[index - 1].x = size[index - 1][0] / 400.0f;
+	this->scale[index - 1].y = size[index - 1][1] / 300.0f;
+	this->scale[index - 1].z = 1;
+	this->offset[index-1] = offset;
 
 	GLint modelLoc = glGetUniformLocation(shader->Program, "model");
-	model = glm::translate(model, glm::vec3(this->transform[index]));
-	model = glm::scale(model, glm::vec3(this->scale[index]));
+	model = glm::translate(model, glm::vec3(this->transform[index-1]));
+	model = glm::scale(model, glm::vec3(this->scale[index-1]));
 
 	GLint offsetXx = glGetUniformLocation(shader->Program, "offsetX");
-	offsetX = this->offset[index];
+	offsetX = this->offset[index-1];
 
 	glBindTexture(GL_TEXTURE_2D, index);
 	glUniform1i(glGetUniformLocation(shader->Program, "ourTexture1"), 0);
@@ -406,8 +399,8 @@ void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	
-	model = glm::scale(model, glm::vec3(1/scale.x, 1 / scale.y, 1 / scale.z));
-	model = glm::translate(model, glm::vec3(-this->transform[index]));
+	model = glm::scale(model, glm::vec3(1.0f/ this->scale[index - 1].x, 1.0f / this->scale[index - 1].y, 1.0f / this->scale[index - 1].z));
+	model = glm::translate(model, glm::vec3(-this->transform[index-1]));
 	glBindTexture(GL_TEXTURE_2D, index);
 	glUniform1i(glGetUniformLocation(shader->Program, "ourTexture1"), 0);
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -415,10 +408,10 @@ void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec
 
 bool SceneManager::checkCollision(int a, int b)
 {
-	if (transform[a].x * 800 + size[a][0]/2 * scale[a].x <= transform[b].x * 800 - size[b][0] / 2 * scale[b].x ||
-		transform[a].x * 800 - size[a][0] / 2 * scale[a].x >= transform[b].x * 800 + size[b][0] / 2 * scale[b].x ||
-		transform[a].y * 600 + size[a][1] / 2 * scale[a].y <= transform[b].y * 600 - size[b][1] / 2 * scale[b].y ||
-		transform[a].y * 600 - size[a][1] / 2 * scale[a].y >= transform[b].y * 600 + size[b][1] / 2 * scale[b].y) {
+	if ((transform[a].x + 1) * 400 + size[a][0] / 2 * scale[a].x <= (transform[b].x + 1) * 400 - size[b][0] / 2 * scale[b].x ||
+		(transform[a].x + 1) * 400 - size[a][0] / 2 * scale[a].x >= (transform[b].x + 1) * 400 + size[b][0] / 2 * scale[b].x ||
+		(transform[a].y - 1) * -300 + size[a][1] / 2 * scale[a].y <= (transform[b].y - 1) * -300 - size[b][1] / 2 * scale[b].y ||
+		(transform[a].y - 1) * -300 - size[a][1] / 2 * scale[a].y >= (transform[b].y - 1) * -300 + size[b][1] / 2 * scale[b].y) {
 		return false;
 	}
 	else
