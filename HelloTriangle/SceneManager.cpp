@@ -43,9 +43,6 @@ void SceneManager::initializeGraphics()
 	//Position Mouse callback
 	glfwSetCursorPosCallback(window, mouseCursorCallback);
 
-	//Mouse Button Callback
-	glfwSetMouseButtonCallback(window, mouseButtonCallback);
-
 	//Setando a callback de redimensionamento da janela
 	glfwSetWindowSizeCallback(window, resize);
 	
@@ -89,15 +86,7 @@ void SceneManager::key_callback(GLFWwindow * window, int key, int scancode, int 
 
 void SceneManager::mouseCursorCallback(GLFWwindow* window, double x, double y)
 {
-}
-
-void SceneManager::mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
-{
-	if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-	{
-
-		std::cout << "Left Button Pressed" << std::endl;
-	}
+	cout << x << ": " << y << endl;
 }
 
 void SceneManager::resize(GLFWwindow * window, int w, int h)
@@ -154,8 +143,6 @@ void SceneManager::render()
 		jumping = true;
 	}
 
-	
-
 	if (jumping == true && caindo == false) {
 		characterPositionY += 0.03f;
 		if (characterPositionY >= 0.5f) {
@@ -169,21 +156,74 @@ void SceneManager::render()
 			caindo = false;
 		}
 	}
-	
-
 	// bind Texture
 	// Bind Textures using texture units
-	offsetBG1 += 0.01f;
-	draw(glm::vec3(0, 0, 0), texture[0], offsetBG1, glm::vec3(3, 2, 1));
+	
+	if (telaAtual == tJogo)
+	{
+		offsetBG1 += 0.01f;
+		draw(glm::vec3(0, 0, 0), texture[0], offsetBG1, glm::vec3(3, 2, 1));
 
-	draw(glm::vec3(characterPositionX - 0.5f, characterPositionY, 0), texture[1], 0, glm::vec3(1, 1, 1));
+		draw(glm::vec3(characterPositionX - 0.5f, characterPositionY, 0), texture[1], 0, glm::vec3(1, 1, 1));
 
-	obstaculoX -= 0.05f;
+		obstaculoX -= 0.05f;
 
-	if (obstaculoX <= -3)
-		obstaculoX = 3;
+		if (obstaculoX <= -3)
+			obstaculoX = 3;
 
-	draw(glm::vec3(obstaculoX, 0, 0), texture[2], 0, glm::vec3(0.2f, 0.2f, 1));
+		draw(glm::vec3(obstaculoX, 0, 0), texture[2], 0, glm::vec3(0.2f, 0.2f, 1));
+
+		if (checkCollision(texture[2], texture[1]))
+		{
+			telaAtual = tGameOver;
+		}
+
+	}
+	else if (telaAtual == tMenu)
+	{
+		draw(glm::vec3(0, 0, 0), texture[3], 0, glm::vec3(2.8, 2, 1));
+
+		glfwGetCursorPos(window, &xpos, &ypos);
+
+		if (xpos > 660 && xpos < 788 && ypos > 444 && ypos < 473 && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		{
+			telaAtual = tJogo;
+		}
+
+		if (xpos > 639 && xpos < 788 && ypos > 515 && ypos < 545 && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		{
+			telaAtual = tCreditos;
+		}
+
+		if (xpos > 627 && xpos < 788 && ypos > 480 && ypos < 509 && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		{
+			telaAtual = tInstrucoes;
+		}
+
+		if (xpos > 670 && xpos < 788 && ypos > 552 && ypos < 580 && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		{
+			telaAtual = sair;
+		}
+	}
+	else if (telaAtual == tGameOver)
+	{
+		draw(glm::vec3(0, 0, 0), texture[4], 0, glm::vec3(2.8, 2, 1));
+
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		{
+			telaAtual = tJogo;
+		}
+	}
+
+	if (telaAtual == tCreditos)
+	{
+		draw(glm::vec3(0, 0, 0), texture[5], 0, glm::vec3(2.8, 2, 1));
+	}
+
+	if (telaAtual == tInstrucoes)
+	{
+		draw(glm::vec3(0, 0, 0), texture[6], 0, glm::vec3(2.8, 2, 1));
+	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
@@ -195,31 +235,13 @@ void SceneManager::render()
 			cout << " NNN  colidiu";
 		}
 	}
-	if (checkCollision(texture[2], texture[1])) {
-		cout << "colidiu";
-	}
-
-
-	
-
-
 }
 
 void SceneManager::run()
 {
 	//GAME LOOP
-	while (!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(window) && telaAtual != sair)
 	{
-
-		
-
-		switch (telaAtual)
-		{
-		case tMenu: telaMenu();
-			break;
-		case tJogo: telaJogo();
-		}
-			
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
 
@@ -285,6 +307,14 @@ void SceneManager::setupScene()
 		texture[1] = setupTexture("../textures/yoshi.png");
 
 		texture[2] = setupTexture("../textures/zap.png");
+
+		texture[3] = setupTexture("../textures/tMenu.png");
+
+		texture[4] = setupTexture("../textures/tGameOver.png");
+
+		texture[5] = setupTexture("../textures/tCreditos.png");
+
+		texture[6] = setupTexture("../textures/tInstrucoes.png");
 
 }
 
@@ -381,23 +411,6 @@ void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec
 	glBindTexture(GL_TEXTURE_2D, index);
 	glUniform1i(glGetUniformLocation(shader->Program, "ourTexture1"), 0);
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	
-	
-
-
-}
-
-void SceneManager::telaJogo()
-{
-}
-
-void SceneManager::telaMenu()
-{
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-	{
-		telaAtual = tJogo;
-	}
-	
 }
 
 bool SceneManager::checkCollision(int a, int b)

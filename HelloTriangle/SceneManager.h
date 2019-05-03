@@ -8,7 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-enum Tela{ tJogo, tMenu };
+enum Tela{ tJogo, tMenu, tCreditos, tInstrucoes, tGameOver, sair };
 
 class SceneManager
 {
@@ -23,7 +23,6 @@ public:
 	//GLFW callbacks
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void mouseCursorCallback(GLFWwindow* window, double x, double y);
-	static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 	static void resize(GLFWwindow* window, int width, int height);
 
 	void do_movement();
@@ -37,8 +36,6 @@ public:
 	void setupCamera2D();
 	int setupTexture(GLchar *path);
 	void draw(glm::vec3 transform, int index, GLfloat offset, glm::vec3 scale);
-	void telaJogo();
-	void telaMenu();
 	//static void tMenu();
 	bool checkCollision(int a, int b);
 	int checkButton(double x, double y, int id);
@@ -48,7 +45,7 @@ public:
 private:
 	GLchar *path;
 	GLfloat characterPositionX=0, characterPositionY=0, offsetBG1;
-	GLfloat obstaculoX;
+	GLfloat obstaculoX = 3;
 	double xpos, ypos;
 	bool jumping = false, caindo = false;
 
@@ -68,15 +65,15 @@ private:
 	glm::mat4 projection;
 
 	//Texture index
-	unsigned int texture[3];
+	unsigned int texture[7];
 
-	float offsetX = 0, offset[3];
+	float offsetX = 0, offset[7];
 
 	//Transform index
-	glm::vec3 transform[3];
-	glm::vec3 scale[3];
+	glm::vec3 transform[7];
+	glm::vec3 scale[7];
 
-	int size[3][2];
+	int size[7][2];
 
 };
 

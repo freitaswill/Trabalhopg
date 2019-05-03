@@ -1,3 +1,4 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (HelloTriangle.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (HelloTriangle.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   SceneManager.cpp
-  HelloTriangle.vcxproj -> C:\Users\Willian\Documents\GitHub\Trabalhopg\Debug\Transforms.exe
+  HelloTriangle.vcxproj -> C:\Users\Theo5154\Documents\GitHub\Trabalhopg\Debug\Transforms.exe
+  HelloTriangle.vcxproj -> C:\Users\Theo5154\Documents\GitHub\Trabalhopg\Debug\Transforms.pdb (Partial PDB)
