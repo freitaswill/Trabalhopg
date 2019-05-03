@@ -7,6 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <ctime>
+
 
 enum Tela{ tJogo, tMenu, tCreditos, tInstrucoes, tGameOver, sair };
 
@@ -43,6 +45,7 @@ public:
 	Tela telaAtual;
 
 private:
+	int telaGameOver;
 	GLchar *path;
 	GLfloat characterPositionX=0, characterPositionY=0, offsetBG1;
 	GLfloat obstaculoX = 3;
@@ -72,6 +75,8 @@ private:
 	//Transform index
 	glm::vec3 transform[7];
 	glm::vec3 scale[7];
+
+	glm::vec3 multScale[7];
 
 	int size[7][2];
 

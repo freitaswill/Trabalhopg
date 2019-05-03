@@ -1,4 +1,8 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (HelloTriangle.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (HelloTriangle.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   SceneManager.cpp
-c:\users\willian\documents\github\trabalhopg\hellotriangle\scenemanager.cpp(324): warning C4101: 'ratio': variável local não referenciada
-  HelloTriangle.vcxproj -> C:\Users\Willian\Documents\GitHub\Trabalhopg\Debug\Transforms.exe
+c:\users\willianfreitas\documents\github\trabalhopg\hellotriangle\scenemanager.cpp(178): error C2660: 'rand': função não recebe 1 argumentos
+c:\users\willianfreitas\documents\github\trabalhopg\hellotriangle\scenemanager.cpp(246): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
+  Gerando Código...
+  Compilando...
+  Source.cpp
+  Gerando Código...

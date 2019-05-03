@@ -1,11 +1,11 @@
 #include "SceneManager.h"
 
+
 //static controllers for mouse and keyboard
 
 static bool keys[1024];
 static bool resized;
 static GLuint width, height;
-
 
 
 SceneManager::SceneManager()
@@ -162,16 +162,16 @@ void SceneManager::render()
 	if (telaAtual == tJogo)
 	{
 		offsetBG1 += 0.01f;
-		draw(glm::vec3(0, 0, 0), texture[0], offsetBG1, glm::vec3(3, 2, 1));
+		draw(glm::vec3(0, 0, 0), texture[0], offsetBG1, glm::vec3(1, 1, 1));
 
 		draw(glm::vec3(characterPositionX - 0.5f, characterPositionY, 0), texture[1], 0, glm::vec3(1, 1, 1));
 
-		obstaculoX -= 0.05f;
+		obstaculoX -= 0.04f;
 
 		if (obstaculoX <= -3)
 			obstaculoX = 3;
 
-		draw(glm::vec3(obstaculoX, 0, 0), texture[2], 0, glm::vec3(0.2f, 0.2f, 1));
+		draw(glm::vec3(obstaculoX, 0, 0), texture[2], 0, glm::vec3(1, 1, 1));
 
 		if (checkCollision(texture[2]-1, texture[1]-1))
 		{
@@ -181,7 +181,7 @@ void SceneManager::render()
 	}
 	else if (telaAtual == tMenu)
 	{
-		draw(glm::vec3(0, 0, 0), texture[3], 0, glm::vec3(2.8, 2, 1));
+		draw(glm::vec3(0, 0, 0), texture[3], 0, glm::vec3(1, 1, 1));
 
 		glfwGetCursorPos(window, &xpos, &ypos);
 
@@ -207,9 +207,9 @@ void SceneManager::render()
 	}
 	else if (telaAtual == tGameOver)
 	{
-		draw(glm::vec3(0, 0, 0), texture[4], 0, glm::vec3(2.8, 2, 1));
+		draw(glm::vec3(0, 0, 0), texture[4], 0, glm::vec3(1, 1, 1));
 
-		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 		{
 			telaAtual = tJogo;
 		}
@@ -217,12 +217,12 @@ void SceneManager::render()
 
 	if (telaAtual == tCreditos)
 	{
-		draw(glm::vec3(0, 0, 0), texture[5], 0, glm::vec3(2.8, 2, 1));
+		draw(glm::vec3(0, 0, 0), texture[5], 0, glm::vec3(1, 1, 1));
 	}
 
 	if (telaAtual == tInstrucoes)
 	{
-		draw(glm::vec3(0, 0, 0), texture[6], 0, glm::vec3(2.8, 2, 1));
+		draw(glm::vec3(0, 0, 0), texture[6], 0, glm::vec3(1, 1, 1));
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
@@ -239,21 +239,31 @@ void SceneManager::render()
 
 void SceneManager::run()
 {
-	//GAME LOOP
-	while (!glfwWindowShouldClose(window) && telaAtual != sair)
-	{
-		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
-		glfwPollEvents();
+	double lastTime = glfwGetTime();
+	int nbFrames = 0;
+	do {
+		// Measure speed
+		double currentTime = glfwGetTime();
+		nbFrames+=1;
+		if (currentTime - lastTime >= 0.016f) { // If last prinf() was more than 1 sec ago
+											 // printf and reset timer
+			cout << "frames" << 1000.0 / double(nbFrames);
+			nbFrames = 0;
+			lastTime += 0.016f;
+			// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
+			glfwPollEvents();
 
-		//Update method(s)
-		do_movement();
+			//Update method(s)
+			do_movement();
 
-		//Render scene
-		render();
-		
-		// Swap the screen buffers
-		glfwSwapBuffers(window);
-	}
+			//Render scene
+			render();
+
+			// Swap the screen buffers
+			glfwSwapBuffers(window);
+		}
+		}while (!glfwWindowShouldClose(window) && telaAtual != sair);
+	
 }
 
 void SceneManager::finish()
@@ -302,9 +312,9 @@ void SceneManager::setupScene()
 	glEnableVertexAttribArray(2);
 
 
-		texture[0] = setupTexture("../textures/box2.png");
+		texture[0] = setupTexture("../textures/tJogo.png");
 
-		texture[1] = setupTexture("../textures/yoshi.png");
+		texture[1] = setupTexture("../textures/capWhats.png");
 
 		texture[2] = setupTexture("../textures/zap.png");
 
@@ -377,14 +387,19 @@ int SceneManager::setupTexture(GLchar *path)
 void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec3 scale)
 {
 	this->transform[index-1] = transform;
-	this->scale[index - 1].x = size[index - 1][0] / 400.0f;
-	this->scale[index - 1].y = size[index - 1][1] / 300.0f;
+	this->scale[index - 1].x = scale.x;
+	this->scale[index - 1].y = scale.y;
 	this->scale[index - 1].z = 1;
+
+	this->multScale[index - 1].x = size[index - 1][0] / 400.0f * scale.x;
+	this->multScale[index - 1].y = size[index - 1][1] / 300.0f * scale.y;
+	this->multScale[index - 1].z = 1;
+
 	this->offset[index-1] = offset;
 
 	GLint modelLoc = glGetUniformLocation(shader->Program, "model");
 	model = glm::translate(model, glm::vec3(this->transform[index-1]));
-	model = glm::scale(model, glm::vec3(this->scale[index-1]));
+	model = glm::scale(model, glm::vec3(this->multScale[index-1]));
 
 	GLint offsetXx = glGetUniformLocation(shader->Program, "offsetX");
 	offsetX = this->offset[index-1];
@@ -399,7 +414,7 @@ void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	
-	model = glm::scale(model, glm::vec3(1.0f/ this->scale[index - 1].x, 1.0f / this->scale[index - 1].y, 1.0f / this->scale[index - 1].z));
+	model = glm::scale(model, glm::vec3(1.0f/ this->multScale[index - 1].x, 1.0f / this->multScale[index - 1].y, 1.0f / this->multScale[index - 1].z));
 	model = glm::translate(model, glm::vec3(-this->transform[index-1]));
 	glBindTexture(GL_TEXTURE_2D, index);
 	glUniform1i(glGetUniformLocation(shader->Program, "ourTexture1"), 0);
