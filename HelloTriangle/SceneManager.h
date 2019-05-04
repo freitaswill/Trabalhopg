@@ -40,6 +40,7 @@ public:
 	void draw(glm::vec3 transform, int index, GLfloat offset, glm::vec3 scale);
 	//static void tMenu();
 	bool checkCollision(int a, int b);
+	bool checkCollision(int a, int b, glm::vec3 trans);
 	int checkButton(double x, double y, int id);
 
 	Tela telaAtual;
@@ -47,8 +48,8 @@ public:
 private:
 	int telaGameOver;
 	GLchar *path;
-	GLfloat characterPositionX=0, characterPositionY=0, offsetBG1;
-	GLfloat obstaculoX = 3;
+	GLfloat characterPositionX=0, characterPositionY=0, offsetBG1, offsetBG2; 
+	GLfloat obstaculoX[7]{ 7, 8, 9, 3, 4, 5, 6 }, obstaculoY[7] { 0, 1, 2, 3, 4, 5, 6 };
 	double xpos, ypos;
 	bool jumping = false, caindo = false;
 
@@ -68,17 +69,17 @@ private:
 	glm::mat4 projection;
 
 	//Texture index
-	unsigned int texture[7];
+	unsigned int texture[9];
 
-	float offsetX = 0, offset[7];
+	float offsetX = 0, offset[9];
 
 	//Transform index
-	glm::vec3 transform[7];
-	glm::vec3 scale[7];
+	glm::vec3 transform[9];
+	glm::vec3 scale[9];
 
-	glm::vec3 multScale[7];
+	glm::vec3 multScale[9];
 
-	int size[7][2];
+	int size[9][2];
 
 };
 

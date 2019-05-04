@@ -7,7 +7,6 @@ static bool keys[1024];
 static bool resized;
 static GLuint width, height;
 
-
 SceneManager::SceneManager()
 {
 }
@@ -110,6 +109,10 @@ void SceneManager::do_movement()
 
 void SceneManager::render()
 {
+	srand(time(0));
+
+
+
 	// Clear the colorbuffer
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -132,20 +135,40 @@ void SceneManager::render()
 		resized = false;
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		characterPositionX += 0.001f;
+	if ((glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT)) == GLFW_PRESS) {
+		characterPositionX += 0.05f;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		characterPositionX -= 0.001f;
+	if ((glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT)) == GLFW_PRESS) {
+		characterPositionX -= 0.05f;
+	}
+	if ((glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) == GLFW_PRESS) {
+		characterPositionY += 0.05f;
+	}
+	if ((glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN)) == GLFW_PRESS) {
+		characterPositionY -= 0.05f;
+	}
 
-	}
-	else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && jumping == false) {
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && jumping == false) {
 		jumping = true;
+		characterPositionX += 1.0f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_RELEASE) {
+		jumping = false;
 	}
 
-	if (jumping == true && caindo == false) {
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS /*&& jumping == false*/) {
+		/*jumping = true;*/
+		for(int i = 0; i < 7; i++){
+			obstaculoX[i] += 0.035f;
+		}
+	}
+	//if (glfwGetKey(window, GLFW_KEY_2) == GLFW_RELEASE) {
+	//	jumping = false;
+	//}
+
+	/*if (jumping == true && caindo == false) {
 		characterPositionY += 0.03f;
-		if (characterPositionY >= 0.5f) {
+		if (characterPositionY >= 0.5f){
 			caindo = true; jumping = false;
 		}
 	}
@@ -155,25 +178,42 @@ void SceneManager::render()
 			characterPositionY = 0;
 			caindo = false;
 		}
-	}
+	}*/
 	// bind Texture
 	// Bind Textures using texture units
 	
 	if (telaAtual == tJogo)
 	{
-		offsetBG1 += 0.01f;
-		draw(glm::vec3(0, 0, 0), texture[0], offsetBG1, glm::vec3(1, 1, 1));
+		offsetBG1 += 0.008f;
 
-		draw(glm::vec3(characterPositionX - 0.5f, characterPositionY, 0), texture[1], 0, glm::vec3(1, 1, 1));
+		offsetBG2 += 0.005f;
 
-		obstaculoX -= 0.04f;
 
-		if (obstaculoX <= -3)
-			obstaculoX = 3;
+		draw(glm::vec3(0, 0, 0), texture[0], 0, glm::vec3(1, 1, 1));
 
-		draw(glm::vec3(obstaculoX, 0, 0), texture[2], 0, glm::vec3(1, 1, 1));
+		draw(glm::vec3(0, 0, 0), texture[7], offsetBG1, glm::vec3(1, 1, 1));
 
-		if (checkCollision(texture[2]-1, texture[1]-1))
+		draw(glm::vec3(0, 0, 0), texture[8], offsetBG2, glm::vec3(1, 1, 1));
+
+		draw(glm::vec3(characterPositionX - 0.5f, characterPositionY, 0), texture[1], 0, glm::vec3(1.5f, 1.5f, 1));
+
+
+		
+
+		for (int i = 0; i < 7; i++) {
+			obstaculoX[i] -= 0.04f;
+			if (obstaculoX[i] <= -1) {
+				obstaculoX[i] = rand() % 4 + 2;
+				obstaculoY[i] = (rand() % 16) / 10.0f + -0.5f;
+				cout << "ZIP ZOP NA PARADA\n";
+			}
+		}
+
+		for(int i = 0; i < 7; i++)
+		draw(glm::vec3(obstaculoX[i], obstaculoY[i], 0), texture[2], 0, glm::vec3(1, 1, 1));
+
+		for(int i = 0; i <7; i++)
+		if (checkCollision(texture[2] - 1, texture[1] - 1, glm::vec3(obstaculoX[i], obstaculoY[i], 1)))
 		{
 			telaAtual = tGameOver;
 		}
@@ -209,9 +249,12 @@ void SceneManager::render()
 	{
 		draw(glm::vec3(0, 0, 0), texture[4], 0, glm::vec3(1, 1, 1));
 
-		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
 		{
-			telaAtual = tJogo;
+			for (int i = 3; i < 10; i++)
+				obstaculoX[i-2] = i;
+
+			telaAtual = tMenu;
 		}
 	}
 
@@ -225,16 +268,16 @@ void SceneManager::render()
 		draw(glm::vec3(0, 0, 0), texture[6], 0, glm::vec3(1, 1, 1));
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	/*if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
 		glfwGetCursorPos(window, &xpos, &ypos);
 		if (checkButton(xpos, ypos, texture[0]) == 0) {
-			cout << "colidiu";
+			cout << "colidiu\n";
 		}
 		if (checkButton(xpos, ypos, texture[0]) == 1) {
-			cout << " NNN  colidiu";
+			cout << " NNN  colidiu\n";
 		}
-	}
+	}*/
 }
 
 void SceneManager::run()
@@ -247,7 +290,7 @@ void SceneManager::run()
 		nbFrames+=1;
 		if (currentTime - lastTime >= 0.016f) { // If last prinf() was more than 1 sec ago
 											 // printf and reset timer
-			cout << "frames" << 1000.0 / double(nbFrames);
+			cout << "frames\n" << 1000.0 / double(nbFrames);
 			nbFrames = 0;
 			lastTime += 0.016f;
 			// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
@@ -325,6 +368,10 @@ void SceneManager::setupScene()
 		texture[5] = setupTexture("../textures/tCreditos.png");
 
 		texture[6] = setupTexture("../textures/tInstrucoes.png");
+
+		texture[7] = setupTexture("../textures/tJogo1.png");
+
+		texture[8] = setupTexture("../textures/tJogo2.png");
 
 }
 
@@ -431,6 +478,18 @@ bool SceneManager::checkCollision(int a, int b)
 	}
 	else
 	return true;
+}
+
+bool SceneManager::checkCollision(int a, int b, glm::vec3 trans)
+{
+	if ((trans.x + 1) * 400 + size[a][0] / 2 * scale[a].x <= (transform[b].x + 1) * 400 - size[b][0] / 2 * scale[b].x ||
+		(trans.x + 1) * 400 - size[a][0] / 2 * scale[a].x >= (transform[b].x + 1) * 400 + size[b][0] / 2 * scale[b].x ||
+		(trans.y - 1) * -300 + size[a][1] / 2 * scale[a].y <= (transform[b].y - 1) * -300 - size[b][1] / 2 * scale[b].y ||
+		(trans.y - 1) * -300 - size[a][1] / 2 * scale[a].y >= (transform[b].y - 1) * -300 + size[b][1] / 2 * scale[b].y) {
+		return false;
+	}
+	else
+		return true;
 }
 
 int SceneManager::checkButton(double x, double y, int id)
