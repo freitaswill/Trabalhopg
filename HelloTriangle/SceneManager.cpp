@@ -189,13 +189,13 @@ void SceneManager::render()
 		offsetBG2 += 0.005f;
 
 
-		draw(glm::vec3(0, 0, 0), texture[0], 0, glm::vec3(1, 1, 1));
+		draw(glm::vec3(0, 0, 0), texture[0], 0, glm::vec3(1, 1, 1), 1, 1);
 
-		draw(glm::vec3(0, 0, 0), texture[7], offsetBG1, glm::vec3(1, 1, 1));
+		draw(glm::vec3(0, 0, 0), texture[7], offsetBG1, glm::vec3(1, 1, 1), 1, 1);
 
-		draw(glm::vec3(0, 0, 0), texture[8], offsetBG2, glm::vec3(1, 1, 1));
+		draw(glm::vec3(0, 0, 0), texture[8], offsetBG2, glm::vec3(1, 1, 1), 1, 1);
 
-		draw(glm::vec3(characterPositionX - 0.5f, characterPositionY, 0), texture[1], 0, glm::vec3(1.5f, 1.5f, 1));
+		draw(glm::vec3(characterPositionX - 0.5f, characterPositionY, 0), texture[1], 0, glm::vec3(1.5f, 1.5f, 1), 2, 1);
 
 
 		
@@ -210,7 +210,7 @@ void SceneManager::render()
 		}
 
 		for(int i = 0; i < 7; i++)
-		draw(glm::vec3(obstaculoX[i], obstaculoY[i], 0), texture[2], 0, glm::vec3(1, 1, 1));
+		draw(glm::vec3(obstaculoX[i], obstaculoY[i], 0), texture[2], 0, glm::vec3(1, 1, 1), 1, 1);
 
 		for(int i = 0; i <7; i++)
 		if (checkCollision(texture[2] - 1, texture[1] - 1, glm::vec3(obstaculoX[i], obstaculoY[i], 1)))
@@ -221,7 +221,7 @@ void SceneManager::render()
 	}
 	else if (telaAtual == tMenu)
 	{
-		draw(glm::vec3(0, 0, 0), texture[3], 0, glm::vec3(1, 1, 1));
+		draw(glm::vec3(0, 0, 0), texture[3], 0, glm::vec3(1, 1, 1), 1 , 1);
 
 		glfwGetCursorPos(window, &xpos, &ypos);
 
@@ -247,7 +247,7 @@ void SceneManager::render()
 	}
 	else if (telaAtual == tGameOver)
 	{
-		draw(glm::vec3(0, 0, 0), texture[4], 0, glm::vec3(1, 1, 1));
+		draw(glm::vec3(0, 0, 0), texture[4], 0, glm::vec3(1, 1, 1), 1, 1);
 
 		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
 		{
@@ -260,12 +260,12 @@ void SceneManager::render()
 
 	if (telaAtual == tCreditos)
 	{
-		draw(glm::vec3(0, 0, 0), texture[5], 0, glm::vec3(1, 1, 1));
+		draw(glm::vec3(0, 0, 0), texture[5], 0, glm::vec3(1, 1, 1), 1, 1);
 	}
 
 	if (telaAtual == tInstrucoes)
 	{
-		draw(glm::vec3(0, 0, 0), texture[6], 0, glm::vec3(1, 1, 1));
+		draw(glm::vec3(0, 0, 0), texture[6], 0, glm::vec3(1, 1, 1), 1, 1);
 	}
 
 	/*if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
@@ -288,10 +288,12 @@ void SceneManager::run()
 		// Measure speed
 		double currentTime = glfwGetTime();
 		nbFrames+=1;
+		velSprites += 1;
 		if (currentTime - lastTime >= 0.016f) { // If last prinf() was more than 1 sec ago
 											 // printf and reset timer
 			cout << "frames\n" << 1000.0 / double(nbFrames);
 			nbFrames = 0;
+			velSprites += 1;
 			lastTime += 0.016f;
 			// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 			glfwPollEvents();
@@ -431,18 +433,23 @@ int SceneManager::setupTexture(GLchar *path)
 	return text;
 }
 
-void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec3 scale)
+void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec3 scale, GLfloat qtdSpritesX, GLfloat qtdSpritesY)
 {
 	this->transform[index-1] = transform;
 	this->scale[index - 1].x = scale.x;
 	this->scale[index - 1].y = scale.y;
 	this->scale[index - 1].z = 1;
 
-	this->multScale[index - 1].x = size[index - 1][0] / 400.0f * scale.x;
-	this->multScale[index - 1].y = size[index - 1][1] / 300.0f * scale.y;
+	this->multScale[index - 1].x = (size[index - 1][0] / 400.0f * scale.x) / qtdSpritesX;
+	this->multScale[index - 1].y = (size[index - 1][1] / 300.0f * scale.y) / qtdSpritesY;
 	this->multScale[index - 1].z = 1;
 
-	this->offset[index-1] = offset;
+	if (qtdSpritesX > 1) {
+		if(velSprites % 15 == 0)
+		this->offset[index - 1] += 1 / qtdSpritesX;
+	}
+	else
+		this->offset[index - 1] = offset;
 
 	GLint modelLoc = glGetUniformLocation(shader->Program, "model");
 	model = glm::translate(model, glm::vec3(this->transform[index-1]));
@@ -451,12 +458,18 @@ void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec
 	GLint offsetXx = glGetUniformLocation(shader->Program, "offsetX");
 	offsetX = this->offset[index-1];
 
+	GLint qtdSpritesXx = glGetUniformLocation(shader->Program, "qtdSpritesX");
+
+	GLint qtdSpritesYy = glGetUniformLocation(shader->Program, "qtdSpritesY");
+
 	glBindTexture(GL_TEXTURE_2D, index);
 	glUniform1i(glGetUniformLocation(shader->Program, "ourTexture1"), 0);
 
 	
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glUniform1f(offsetXx, offsetX);
+	glUniform1f(qtdSpritesXx, qtdSpritesX);
+	glUniform1f(qtdSpritesYy, qtdSpritesY);
 	// render container
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

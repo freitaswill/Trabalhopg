@@ -1,8 +1,7 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (HelloTriangle.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (HelloTriangle.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   SceneManager.cpp
-c:\users\willianfreitas\documents\github\trabalhopg\trabalho\trabalhopg\hellotriangle\scenemanager.cpp(112): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
-c:\users\willianfreitas\documents\github\trabalhopg\trabalho\trabalhopg\hellotriangle\scenemanager.cpp(206): warning C4244: '=': conversão de 'int' para 'GLfloat', possível perda de dados
-c:\users\willianfreitas\documents\github\trabalhopg\trabalho\trabalhopg\hellotriangle\scenemanager.cpp(255): warning C4244: '=': conversão de 'int' para 'GLfloat', possível perda de dados
-c:\users\willianfreitas\documents\github\trabalhopg\trabalho\trabalhopg\hellotriangle\scenemanager.cpp(381): warning C4101: 'ratio': variável local não referenciada
-  HelloTriangle.vcxproj -> C:\Users\willianfreitas\Documents\GitHub\Trabalhopg\Trabalho\Trabalhopg\Debug\Transforms.exe
-  HelloTriangle.vcxproj -> C:\Users\willianfreitas\Documents\GitHub\Trabalhopg\Trabalho\Trabalhopg\Debug\Transforms.pdb (Partial PDB)
+c:\users\willian\documents\github\trabalhopg\hellotriangle\scenemanager.cpp(112): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
+c:\users\willian\documents\github\trabalhopg\hellotriangle\scenemanager.cpp(206): warning C4244: '=': conversão de 'int' para 'GLfloat', possível perda de dados
+c:\users\willian\documents\github\trabalhopg\hellotriangle\scenemanager.cpp(255): warning C4244: '=': conversão de 'int' para 'GLfloat', possível perda de dados
+c:\users\willian\documents\github\trabalhopg\hellotriangle\scenemanager.cpp(383): warning C4101: 'ratio': variável local não referenciada
+  HelloTriangle.vcxproj -> C:\Users\Willian\Documents\GitHub\Trabalhopg\Debug\Transforms.exe

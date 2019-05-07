@@ -37,7 +37,7 @@ public:
 	void setupScene();
 	void setupCamera2D();
 	int setupTexture(GLchar *path);
-	void draw(glm::vec3 transform, int index, GLfloat offset, glm::vec3 scale);
+	void draw(glm::vec3 transform, int index, GLfloat offset, glm::vec3 scale, GLfloat qtdSpritesX, GLfloat qtdSpritesY);
 	//static void tMenu();
 	bool checkCollision(int a, int b);
 	bool checkCollision(int a, int b, glm::vec3 trans);
@@ -52,6 +52,7 @@ private:
 	GLfloat obstaculoX[7]{ 7, 8, 9, 3, 4, 5, 6 }, obstaculoY[7] { 0, 1, 2, 3, 4, 5, 6 };
 	double xpos, ypos;
 	bool jumping = false, caindo = false;
+	int velSprites = 0;
 
 	//GFLW window
 	GLFWwindow *window;
@@ -71,7 +72,7 @@ private:
 	//Texture index
 	unsigned int texture[9];
 
-	float offsetX = 0, offset[9];
+	float offsetX = 0, offset[9]{};
 
 	//Transform index
 	glm::vec3 transform[9];
