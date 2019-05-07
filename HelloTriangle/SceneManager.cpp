@@ -195,7 +195,7 @@ void SceneManager::render()
 
 		draw(glm::vec3(0, 0, 0), texture[8], offsetBG2, glm::vec3(1, 1, 1), 1, 1);
 
-		draw(glm::vec3(characterPositionX - 0.5f, characterPositionY, 0), texture[1], 0, glm::vec3(1.5f, 1.5f, 1), 2, 1);
+		draw(glm::vec3(characterPositionX - 0.5f, characterPositionY, 0), texture[1], 0, glm::vec3(1.5f, 1.5f, 1), 10, 1);
 
 
 		
@@ -440,9 +440,10 @@ void SceneManager::draw(glm::vec3 transform, int index, GLfloat offset, glm::vec
 	this->scale[index - 1].y = scale.y;
 	this->scale[index - 1].z = 1;
 
-	this->multScale[index - 1].x = (size[index - 1][0] / 400.0f * scale.x) / qtdSpritesX;
-	this->multScale[index - 1].y = (size[index - 1][1] / 300.0f * scale.y) / qtdSpritesY;
+	this->multScale[index - 1].x = size[index - 1][0] / 400.0f * scale.x / qtdSpritesX;
+	this->multScale[index - 1].y = size[index - 1][1] / 300.0f * scale.y;
 	this->multScale[index - 1].z = 1;
+	this->qtdSpritesX[index - 1] = qtdSpritesX;
 
 	if (qtdSpritesX > 1) {
 		if(velSprites % 15 == 0)
@@ -495,8 +496,8 @@ bool SceneManager::checkCollision(int a, int b)
 
 bool SceneManager::checkCollision(int a, int b, glm::vec3 trans)
 {
-	if ((trans.x + 1) * 400 + size[a][0] / 2 * scale[a].x <= (transform[b].x + 1) * 400 - size[b][0] / 2 * scale[b].x ||
-		(trans.x + 1) * 400 - size[a][0] / 2 * scale[a].x >= (transform[b].x + 1) * 400 + size[b][0] / 2 * scale[b].x ||
+	if ((trans.x + 1) * 400 + size[a][0] / 2 * scale[a].x <= (transform[b].x + 1) * 400 - (size[b][0] / qtdSpritesX[b]) / 2 * scale[b].x ||
+		(trans.x + 1) * 400 - size[a][0] / 2 * scale[a].x >= (transform[b].x + 1) * 400 + (size[b][0] / qtdSpritesX[b]) / 2 * scale[b].x ||
 		(trans.y - 1) * -300 + size[a][1] / 2 * scale[a].y <= (transform[b].y - 1) * -300 - size[b][1] / 2 * scale[b].y ||
 		(trans.y - 1) * -300 - size[a][1] / 2 * scale[a].y >= (transform[b].y - 1) * -300 + size[b][1] / 2 * scale[b].y) {
 		return false;

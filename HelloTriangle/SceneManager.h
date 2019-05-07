@@ -52,6 +52,7 @@ private:
 	GLfloat obstaculoX[7]{ 7, 8, 9, 3, 4, 5, 6 }, obstaculoY[7] { 0, 1, 2, 3, 4, 5, 6 };
 	double xpos, ypos;
 	bool jumping = false, caindo = false;
+	GLfloat qtdSpritesX[9];
 	int velSprites = 0;
 
 	//GFLW window
